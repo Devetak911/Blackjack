@@ -354,13 +354,7 @@ account create() {
 	cout << "Please enter a password." << endl; //asks for password
 	cin.ignore(); // so cin will work
 	getline(cin, user.password); //takes in the line b/c it may be more than one word
-	cin.ignore(); //so the next line will wokr
-
-	cout << "Please enter your name." << endl; //asks for the users name
-	getline(cin, user.name); //takes it in
-
-	cout << "Please enter your email address." << endl; //asks for email address
-	cin >> user.email; //takes it in
+	cin.ignore(); //so the next line will work
 
 	cout << "Please enter how much money you'd like to deposit" << endl; //asks for money
 	cin >> user.money; //takes it in
@@ -392,7 +386,7 @@ void save(player user) {
 	else {
 		percent = ((double)user.info.wins / user.info.total_played) * 100; //win percentage
 	}
-	output << user.info.username << endl << user.info.password << endl << user.info.name << endl << user.info.email << endl << user.info.money << endl << user.info.total_played << endl << user.info.wins << endl << setprecision(3) << percent; //writes the data to the file
+	output << user.info.username << endl << user.info.password << endl << user.info.name << endl << user.info.money << endl << user.info.total_played << endl << user.info.wins << endl << setprecision(3) << percent; //writes the data to the file
 
 	output.close(); //closes the output stream
 }
