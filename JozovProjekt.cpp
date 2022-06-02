@@ -428,7 +428,6 @@ account load() {
 		Takes in all the user info
 	*/
 	getline(input, user.name);
-	getline(input, user.email);
 	input >> user.money;
 	input >> user.total_played;
 	input >> user.wins;
