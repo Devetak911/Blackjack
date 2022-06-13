@@ -7,43 +7,43 @@
 #include <iomanip>
 using namespace std;
 
-//enum types for the card suits
+
 enum card_suit {
 	S, H, D, C
 };
 
-//Global Variables - yes I know they are bad but rather than pass this everywhere I put it here. Also allows me to change the min bet in one spot rather than everywhere
-int MIN_BET = 5; //Minimum bet is $5
 
-//Structures
-struct account { //account structure. This will store all the player information
-	string ime; //The name on the account
-	string email; //the email address registered to this account
-	string username; //the username of this account
-	string password; //pasword for the account
-
-	int money; //in case they decide to quit playing when they come back their money will be there may not use this but we'll see
+int MIN_BET = 5; 
 
 
-	int wins; //games stats
-	int total_played; //game stats
-	double win_percentage; //game stats
+struct account { 
+	string ime; 
+	string email; 
+	string username; 
+	string password; 
+
+	int money; 
+
+
+	int wins; 
+	int total_played; 
+	double win_percentage; 
 };
 
-struct card { //how the cards are stored
-	int value; //value of the card
-	card_suit suit; //suit of the card we have. Not really that important in this game but might as well have it
-	bool up; //for the dealer since one card is face down
+struct card {
+	int value; 
+	card_suit suit; 
+	bool up; 
 };
 
-struct player { //basis of each player in the game including the dealer
-	account info; //player's account info
-	vector<card> hand; //the players hand
-	int bet; //how much the user is betting
-	int insurance_bet; //if they take the insurance
+struct player { 
+	account info; 
+	vector<card> hand; 
+	int bet; 
+	int insurance_bet; 
 };
 
-//prototypes
+
 card deal();
 card hitMe();
 int score(vector<card>);
@@ -66,367 +66,310 @@ void displayMenu();
 void displayRules();
 
 int main() {
-	unsigned int time_seed = time(0); //so we can get a random number
-	srand(time_seed); //seeding the random number
-	player user; //creates a player called user
-	player dealer; //creates the dealer
-	vector<player> players; //creates a vector of players
-	char input; //for the Input
+	unsigned int time_seed = time(0); 
+	srand(time_seed); 
+	player user; 
+	player dealer; 
+	vector<player> players; 
+	char input; 
 
-	dealer.info.username = "Dealer"; //sets up the dealer info
-	players.push_back(dealer); //puts the dealer in the vector
+	dealer.info.username = "Dealer"; 
+	players.push_back(dealer); 
 
-	int menu; // so we can take in input
+	int menu; 
 
 	do {
-		displayMenu(); //displays the menu
-		cin >> menu; //take in the user input
+		displayMenu(); 
+		cin >> menu; 
 
-		if (menu == 1) { //if the user wants to read the rules
-			displayRules(); //displays the rules
+		if (menu == 1) { 
+			displayRules(); 
 		}
-		else if (menu == 2) { //if the user wants to play
-			cout << "Koliko igraca(1 ili 2)" << endl; //asks how many players
-			int numPlayers; //so we can take in how many players
-			cin >> numPlayers; //takes in the input
-			for (int i = 0; i < numPlayers; i++) { //cycles through the players
-				cout << "Novi igrac(N) ili postojeci(E)?" << endl; //asks if they are a new or existig player
-				cin >> input; //takes in their input
+		else if (menu == 2) { 
+			cout << "Koliko igraca(1 ili 2)" << endl; 
+			int numPlayers; 
+			cin >> numPlayers; 
+			for (int i = 0; i < numPlayers; i++) { 
+				cout << "Novi igrac(N) ili postojeci(E)?" << endl; 
+				cin >> input; 
 
-				if (input == 'N' || input == 'n') { //if they are new
-					user.info = create(); //creates new account info
-					save(user); //saves the player
-					players.push_back(user); //pushes the player on the vector
+				if (input == 'N' || input == 'n') { 
+					user.info = create(); 
+					save(user); 
+					players.push_back(user); 
 				}
-				else if (input == 'E' || input == 'e') { //if they are a existing player
-					user.info = load(); //loads their account info
-					players.push_back(user); //pushes them on the stack
+				else if (input == 'E' || input == 'e') { 
+					user.info = load(); 
+					players.push_back(user); 
 				}
 
 			}
 		}
-		else { //if the user can't follow directions
-			cout << "Unesite 1 ili 2" << endl; //reiterates their only options
-			menu = 0; //resets menu
-			cin.ignore(); //ignores what's in the buffer
+		else { 
+			cout << "Unesite 1 ili 2" << endl; 
+			menu = 0; 
+			cin.ignore(); 
 		}
-	} while (menu != 2); //while they don't choose play we will repeat this until we finish the never ending story
+	} while (menu != 2); 
 
-	bool cond = false; //so we can ask if they want to continue
+	bool cond = false; 
 	int size = players.size();
 	do {
 		for (int i = 1; i < players.size(); i++) {
-			if (players[i].info.money < 5) { //checks to see if they player has any money if not they can add more
-				cout << players[i].info.username << " vise nema para. Zelite li dodati pare?, da(Y) ili ne (N)?" << endl; //Lets them know they are out of funds and if they want to add some
-				cin >> input; //takes in input
-				if (input == 'Y' || input == 'y') { //if they say yes
-					cout << "Koliko para bi ste htijeli dodati?" << endl; //how much
-					cin >> players[i].info.money; //takes it in
+			if (players[i].info.money < 5) {
+				cout << players[i].info.username << " vise nema para. Zelite li dodati pare?, da(Y) ili ne (N)?" << endl; 
+				cin >> input; 
+				if (input == 'Y' || input == 'y') { 
+					cout << "Koliko para bi ste htijeli dodati?" << endl; 
+					cin >> players[i].info.money; 
 				}
-				else { //if not we save their info and leave
-					save(players[i]); //saves info
-					players.erase(players.begin() + (i)); //erases player from vector
+				else { 
+					save(players[i]); 
+					players.erase(players.begin() + (i)); 
 					i--;
 
 				}
 			}
 
-			if (cond && players.size() > 1) {//if they have played at least once
+			if (cond && players.size() > 1) {
 				cout << players[i].info.username << " Zelite li nastaviti igrati(P) ili odustati(Q)" << endl;
-				cin >> input; //takes in input
-				if (input == 'q' || input == 'Q') { //player want to quit
-					save(players[i]); //saves info
-					players.erase(players.begin() + (i)); //erases player from vector
+				cin >> input; 
+				if (input == 'q' || input == 'Q') { 
+					save(players[i]); 
+					players.erase(players.begin() + (i)); 
 					i--;
 				}
 			}
 		}
-		play(players); //and we play
-		cond = true; //they finished one hand
+		play(players); 
+		cond = true; 
 	} while (players.size() > 1);
-	//!(input == 'q' || input == 'Q')
+	
 
 	return 0;
 }
-/**
-	Simple method that displays the rules of the game only
-*/
+
 void displayRules() {
 	cout << "The rules of blackjack are fairly simple and your only opponent in the game is the dealer. Each player is dealt a two cards face up while the dealer only has one card face up. The goal is to have your two cards added total to be higher than the dealer’s two cards and under 21. If you go over 21 you “bust”, or lose, or if the dealers two cards added together are higher than yours you also lose.	 If your two card total is equal to the dealers then it is a “stand-off” or a tie. Cards values are usually face value, 2 is 2 and 10 is 10, while all face cards, jack/queen/king, are also 10. The only exception to this rule are Aces, they can take on the value of 1 or 11. To get your two cards total you simply add your two cards together. If you have any combination of an Ace or any card that is 10 points then you have what is called blackjack, 21 pts. Getting blackjack means you get paid more if you win. With all of that being said if you’re not satisfied with your two card total then you can take extra cards, called taking a hit, and for each hit you get you get one more card. The dealer does this as well but has a strict set of rules to follow on whether or not to take a hit. If a dealer’s hand is less than or equal to 16 or a “soft” 17, meaning they have an ace and a 6, they must take a hit. If it’s 17 or higher the dealer must stand. So now that we know the dealer rules there are a few options for users. As I stated earlier you can take hits to increase your card total. You may also split your cards and double down. Splitting can be done when your first two cards are of equal value and can only be split from the original hand, split hands cannot be split, the bet has to be equal or greater than the original bet for each hand. For each time you split you will receive and additional card for that hand and then you play like regular blackjack. Users may also double down which consists of a user placing another bet of equal or lesser value when their first two cards total is equal to 9, 10, or 11 without aces. After doubling down you will only get one additional card. Some of you may have realized that if the dealer gets a blackjack or 21 you pretty much always lose, unless you yourself have blackjack. There is a way around this and it’s called insurance. If the dealer is dealt an ace face up then the dealer will ask if you want to take out insurance, equal to half of your original bet, to insure your hand if the dealer has blackjack and only when he has blackjack and helps insure you don’t lose money if he does have blackjack, insurance pays 2 to 1 so your insurance bet will cover the loss of your hand if you bet half." << endl; //displays the rules
 }
-/**
-	Simple method that displays the menu for the game only
-*/
+
 void displayMenu() {
-	cout << "Dobrodosli u blackjack!" << endl; //output
-	cout << "Odaberite jednu od opcija" << endl; //output
-	cout << "1) Pravila" << endl; //output
-	cout << "2) Play" << endl; //output
+	cout << "Dobrodosli u blackjack!" << endl; 
+	cout << "Odaberite jednu od opcija" << endl;
+	cout << "1) Pravila" << endl; 
+	cout << "2) Play" << endl; 
 }
-/**
-	Rules for the dealer. They hit on everything up to 17 including a soft 17
-*/
+
 void dealer_play(player& dealer) {
-	if ((score(dealer.hand) < 17) || (score(dealer.hand) == 17 && hasAce(dealer.hand))) { //dealer hits at less than 17 and on soft 17
-		dealer.hand.push_back(hitMe()); //dealer gets a card
+	if ((score(dealer.hand) < 17) || (score(dealer.hand) == 17 && hasAce(dealer.hand))) { 
+		dealer.hand.push_back(hitMe()); 
 	}
 }
-/**
- how we will play
- This method takes care of all the play portions of the game. Taking hits, splitting, double down, etc
- Takes in the vector of players by reference so we can make changes directly to the players
-*/
+
 void play(vector<player>& players) {
-	char input; //for our input
+	char input; 
 
-	for (int i = 1; i < players.size(); i++) { //cycles through the players
-		bet(players[i]); //players bet here
-		cout << "Pare: " << players[i].info.money << setw(10) << "Ulozene pare: " << players[1].bet << endl; //display their money and bet amount
+	for (int i = 1; i < players.size(); i++) { 
+		bet(players[i]); 
+		cout << "Pare: " << players[i].info.money << setw(10) << "Ulozene pare: " << players[1].bet << endl; 
 	}
-
-	/**the below function goes through each player and deals them two cards. To make it more realistic
-		I actually went through every player and gave them one card a time. So it starts with the dealer
-	*/
 	for (int i = 0; i < (players.size() * 2); i++) {
 		players[(i % players.size())].hand.push_back(deal());
-		if ((i % players.size()) == 0 && (i % 2) == 0) { //the dealers first card
-			players[(i % players.size())].hand[(i % 2)].up = false; //is set to false since it's face down
+		if ((i % players.size()) == 0 && (i % 2) == 0) { 
+			players[(i % players.size())].hand[(i % 2)].up = false; 
 		}
 	}
-	/**
-		The below function shows each players score but the dealers
-	*/
+
 	for (int i = 1; i < players.size(); i++) {
 		cout << players[i].info.username << " ima: " << score(players[i].hand) << setw(10) << endl;
 	}
 
-	/**
-		The below function displays each persons cards
-	*/
 	for (int i = 0; i < players.size(); i++) {
 		cout << players[i].info.username << " karte:" << endl;
 		printCards(players[i].hand);
 	}
 
-	/**
-		The below function  actually consists of the playing
-	*/
-	bool cont = true; //we will use this
-	for (int i = 1; i < players.size(); i++) { //we cycle through all the players since each player plays on their own
+
+	bool cont = true; 
+	for (int i = 1; i < players.size(); i++) { 
 		do {
-			if (players[0].hand[1].value == 1 && cont) { //if the dealer has an ace and cont is true - basically this only happens the first time if the dealer doesn't have blackjack
-				insurance(players); //asks player if they want insurance
-				if (score(players[0].hand) == 21) { //checks to see if the dealer has blackjack - we know the first card is an A
-					players[0].hand[0].up = true; //if they do we set the first card to face up
+			if (players[0].hand[1].value == 1 && cont) { 
+				insurance(players);
+				if (score(players[0].hand) == 21) { 
+					players[0].hand[0].up = true; 
 
-					printCards(players[0].hand); //prints the dealers cards
+					printCards(players[0].hand); 
 
-					/**
-						The below function cycles through the players and pays them out since they lost
-					*/
 					for (int i = 1; i < players.size(); i++) {
 						payout(players[0], players[i]);
 					}
-					input = 'S'; //sets input to stay since they just lost
+					input = 'S'; 
 				}
-				cont = false; //if the dealer didn't have blackjack this is now false
+				cont = false; 
 			}
-			if (players[0].hand[1].value >= 10 && cont) { //if the dealer has a 10 or face card showing we don't check for insurance but if they have blackjack that's game
-				if (score(players[0].hand) == 21) { //if they have blackjack
-					players[0].hand[0].up = true; //puts the dealers first card face up
+			if (players[0].hand[1].value >= 10 && cont) { 
+				if (score(players[0].hand) == 21) { 
+					players[0].hand[0].up = true; 
 
-					printCards(players[0].hand); //prints the dealers card
-					/**
-						The below function pays out the players since they just lost
-					*/
+					printCards(players[0].hand); 
+			
 					for (int i = 1; i < players.size(); i++) {
 						payout(players[0], players[i]);
 					}
-					input = 'S'; //input is now S since the players lost					
+					input = 'S'; 					
 				}
-				cont = false; //if the dealer doesn't have 21 we don't care about this anymore
+				cont = false; 
 			}
-			/**
-				As long as the players score is less than 21
-			*/
 			if (score(players[0].hand) <= 21) {
-				/**
-				The most complicated first - if they have a pair of 5's they can split, double down, hit, or stay
-				*/
+		
 				if (((players[i].hand[0].value >= 10 && players[i].hand[1].value >= 10) || players[i].hand[0].value == players[i].hand[1].value) && players[i].hand.size() == 2 && score(players[i].hand) == 10) {
-					cout << players[i].info.username << " zbroj karti: " << score(players[i].hand) << endl; //shows them their score
-					cout << "Zelite li udvostručiti(D), podjeli(L),hit(H), ili stand(S)?" << endl; //ask them
+					cout << players[i].info.username << " zbroj karti: " << score(players[i].hand) << endl; 
+					cout << "Zelite li udvostručiti(D), podjeli(L),hit(H), ili stand(S)?" << endl; 
 				}
-				else if (((players[i].hand[0].value >= 10 && players[i].hand[1].value >= 10) || (players[i].hand[0].value == players[i].hand[1].value)) && players[i].hand.size() == 2) { //if they can split their cards
-					cout << players[i].info.username << "zbroj karti: " << score(players[i].hand) << endl; //shows them their score
-					cout << "Zelite li podjeliti(L) vase karte, hit(H), ili stand(S)?" << endl; //ask them
+				else if (((players[i].hand[0].value >= 10 && players[i].hand[1].value >= 10) || (players[i].hand[0].value == players[i].hand[1].value)) && players[i].hand.size() == 2) { 
+					cout << players[i].info.username << "zbroj karti: " << score(players[i].hand) << endl; 
+					cout << "Zelite li podjeliti(L) vase karte, hit(H), ili stand(S)?" << endl; 
 				}
-				else if (players[i].hand.size() == 2 && score(players[i].hand) >= 9 && score(players[i].hand) <= 11 && !(hasAce(players[i].hand))) { //can they double down
-					cout << players[i].info.username << " zbroj karti: " << score(players[i].hand) << endl; //shows them their score
-					cout << "Zelite li udvostručiti(D), hit(H), ili stand(S)?" << endl; //asks them
+				else if (players[i].hand.size() == 2 && score(players[i].hand) >= 9 && score(players[i].hand) <= 11 && !(hasAce(players[i].hand))) { 
+					cout << players[i].info.username << " zbroj karti: " << score(players[i].hand) << endl; 
+					cout << "Zelite li udvostručiti(D), hit(H), ili stand(S)?" << endl; 
 				}
-				else { //they can't do anything special
-					cout << players[i].info.username << " zbroj karti: " << score(players[i].hand) << endl; //shows them their score
-					cout << "Hit(H) ili Stand(S)?"; //asks them what they want to do
+				else { 
+					cout << players[i].info.username << " zbroj karti: " << score(players[i].hand) << endl; 
+					cout << "Hit(H) ili Stand(S)?"; 
 				}
-				cin >> input; //takes in the input
-				switch (input) { //what did they choose?
-				case 'L': //they wanted to split
-					split(players[0], players[i]); //we split them
-					printCards(players[i].hand); //reprint their cards in case they forgot
+				cin >> input; 
+				switch (input) { 
+				case 'L': 
+					split(players[0], players[i]); 
+					printCards(players[i].hand);
 					break;
 				case 'D':
-					doubleDown(players[0], players[i]); //they double down
-					input = 'S'; //sets input to S since now they are done
+					doubleDown(players[0], players[i]); 
+					input = 'S'; 
 					break;
 				case 'H':
-					players[i].hand.push_back(hitMe()); //we give them one more card for their hit
-					printCards(players[i].hand); //reprint their cards
-					cout << players[i].info.username << " score is now " << score(players[i].hand) << endl; //reprint their score
+					players[i].hand.push_back(hitMe()); 
+					printCards(players[i].hand); 
+					cout << players[i].info.username << " score is now " << score(players[i].hand) << endl; 
 					break;
-				default: //this is here for people can't follow directions
-					input = 's'; //input is S
+				default: 
+					input = 's'; 
 				}
-				if (score(players[i].hand) > 21) { //if they bust they are done
-					input = 'S'; //so we can quit
+				if (score(players[i].hand) > 21) { 
+					input = 'S'; 
 				}
 			}
-		} while (!(input == 'S' || input == 's')); //we continue doing this until they are want to stay
+		} while (!(input == 'S' || input == 's')); 
 	}
 
-	dealer_play(players[0]); //now the dealer plays
+	dealer_play(players[0]); 
 
-	players[0].hand[0].up = true; //now the everybody can see the first card
+	players[0].hand[0].up = true; 
 
-	/**
-		The below method shows everybody's score and cards including dealers
-	*/
 	for (int i = 0; i < players.size(); i++) {
 		cout << players[i].info.username << " zborj karti: " << score(players[i].hand) << " karte: ";
 		printCards(players[i].hand);
 	}
 
-	/**
-		The below method pays everybody out
-	*/
 	for (int i = 1; i < players.size(); i++) {
-		if (score(players[i].hand) > 21) { //if the player busted we tell them
+		if (score(players[i].hand) > 21) { 
 			cout << "Presli ste 21! ";
 		}
-		int win = winner(players[0], players[i]); //we figure out who wins
+		int win = winner(players[0], players[i]); 
 		if (win == 1) {
-			players[i].info.wins += 1; //if the player wins we add one to their win record
+			players[i].info.wins += 1; 
 		}
-		payout(players[0], players[i]); //we payout everybody
-		clear(players[i].hand); //we clear out their hands
-		players[i].info.total_played += 1; //adds one to the total played	
+		payout(players[0], players[i]); 
+		clear(players[i].hand); 
+		players[i].info.total_played += 1; 	
 	}
 
-	clear(players[0].hand); //clear out the dealers hand
+	clear(players[0].hand); 
 }
-/**
-	The below method clears out a players hand
-*/
+
 void clear(vector<card>& hand) {
 	hand.clear();
 }
-/**
-Creates new accounts for new players
-*/
+
 account create() {
-	account user; //creates a new account
+	account user; 
 	cout << "Vase korisnicko ime?" << endl;
-	fstream input; //so we can take in the input
-	string filename; //what file we will open
-
-	/**
-		The below method basically checks to see if a username is available by checking to see if the file can even be open
-	*/
+	fstream input; 
+	string filename; 
 	do {
-		cin >> user.username; //takes in the username
-		filename = user.username + ".dat"; //adds the extension to the file
-		input.open(filename); //opens the file
-		if (!input.fail()) { //if it didn't fail the name is taken
-			cout << "Ovo ime je zauzeto. Izaberite neko drugo." << endl; //we tell the user
+		cin >> user.username; 
+		filename = user.username + ".dat"; 
+		input.open(filename); 
+		if (!input.fail()) { 
+			cout << "Ovo ime je zauzeto. Izaberite neko drugo." << endl; 
 		}
-	} while (!input.fail()); //repeat until it doesn't fail
+	} while (!input.fail()); 
 
-	cout << "Unesite lozinku." << endl; //asks for password
-	cin.ignore(); // so cin will work
-	getline(cin, user.password); //takes in the line b/c it may be more than one word
-	cin.ignore(); //so the next line will wokr
+	cout << "Unesite lozinku." << endl; 
+	cin.ignore();
+	getline(cin, user.password); 
+	cin.ignore(); 
 
-	cout << "Vase ime?." << endl; //asks for the users name
-	getline(cin, user.ime); //takes it in
+	cout << "Vase ime?." << endl; 
+	getline(cin, user.ime); 
 
-	cout << "Ponovo unesite lozinku." << endl; //asks for email address
-	cin >> user.email; //takes it in
+	cout << "Ponovo unesite lozinku." << endl; 
+	cin >> user.email; 
 
-	cout << "Koliko para imate?" << endl; //asks for money
-	cin >> user.money; //takes it in
+	cout << "Koliko para imate?" << endl;
+	cin >> user.money; 
 
-	user.total_played = 0; //sets these to 0
-	user.wins = 0; //sets these to 0
-	user.win_percentage = 0; //set these to 0
+	user.total_played = 0; 
+	user.wins = 0; 
+	user.win_percentage = 0; 
 
-	input.close(); //closes the input stream
-	return user; //returns the account
+	input.close(); 
+	return user; 
 }
-/**
-	For saving account info for when you're done
-*/
 void save(player user) {
-	ofstream output; //output stream
-	string filename = user.info.username + ".dat"; //so we know what file to save to
+	ofstream output; 
+	string filename = user.info.username + ".dat"; 
 
-	output.open(filename, ios::out); //we want to erase all previous data
+	output.open(filename, ios::out); 
 
-	if (!output) {//if we can't open output
+	if (!output) {
 		cerr << "Output file will not open and data could not be saved. " << endl;
 	}
 
-	double percent = 0; //for the win percentage
+	double percent = 0; 
 	if (user.info.total_played == 0) {
-		percent = 0; //so we don't divide by zero
+		percent = 0; 
 	}
 	else {
-		percent = ((double)user.info.wins / user.info.total_played) * 100; //win percentage
+		percent = ((double)user.info.wins / user.info.total_played) * 100; 
 	}
 	output << user.info.username << endl << user.info.password << endl << user.info.ime << endl << user.info.email << endl << user.info.money << endl << user.info.total_played << endl << user.info.wins << endl << setprecision(3) << percent; //writes the data to the file
 
-	output.close(); //closes the output stream
+	output.close();
 }
 
-/**
-For loading account info
-*/
 account load() {
-	string username, password; //so we know what the username and password is
-	string filename; //how we will save the data
-	account user; //sets up an account so we can take in the data
-	ifstream input; //file stream 
-
-	/**
-		We get the users username and password
-	*/
-	do {
-		cout << "Koje je vase korisnicko ime?" << endl; //asks for username
-		cin >> username; //take it in
-		filename = username + ".dat"; //append the file extension
-		input.open(filename); //opens the file //opens the file
-	} while (input.fail()); //if it fails to open they probably put in the wrong username so we keep doing this until they get it right
-
-	getline(input, user.username); //take in the username
-	getline(input, user.password); //take in the password
+	string username, password; 
+	string filename; 
+	account user; 
+	ifstream input; 
 
 	do {
-		cout << "Koja je vasa lozinka" << endl; //asks for the password
-		cin >> password; //takes it in
-	} while (!(password == user.password)); //checks password and keeps checking until the user gets it right
+		cout << "Koje je vase korisnicko ime?" << endl; 
+		cin >> username; 
+		filename = username + ".dat"; 
+		input.open(filename); 
+	} while (input.fail()); 
 
-	/**
-		Takes in all the user info
-	*/
+	getline(input, user.username); 
+	getline(input, user.password); 
+
+	do {
+		cout << "Koja je vasa lozinka" << endl; 
+		cin >> password; 
+	} while (!(password == user.password));
+
 	getline(input, user.ime);
 	getline(input, user.email);
 	input >> user.money;
@@ -434,186 +377,151 @@ account load() {
 	input >> user.wins;
 	input >> user.win_percentage;
 
-	input.close(); //close out the file
-	return user; //returns the account info
+	input.close();
+	return user; 
 }
-/**
-	if the dealer is displaying an Ace it asks all the players if they want to take out insurance
-*/
+
 void insurance(vector<player>& players) {
-	int size = players.size(); //gets the size of the vector
+	int size = players.size(); 
 
 	for (int i = 1; i < size; i++) {
 		int bet;
 		players[i].insurance_bet = 0;
-		if ((players[i].info.money - (players[i].bet / 2)) >= 0) { //can the player even make an insurance bet
+		if ((players[i].info.money - (players[i].bet / 2)) >= 0) { 
 			do {
 				cin.ignore();
-				cout << "How much would you like to bet for insurance, up to " << (players[i].bet / 2) << players[i].info.username << "?(0 if you don't want to take out insurance)" << endl; //asks if they want to make an insurance bet
-				cin >> bet; //takes it in
-			} while (!(bet <= (players[i].bet / 2) && bet >= 0)); //continues to do this until they input the right stuff
+				cout << "How much would you like to bet for insurance, up to " << (players[i].bet / 2) << players[i].info.username << "?(0 if you don't want to take out insurance)" << endl;
+				cin >> bet; 
+			} while (!(bet <= (players[i].bet / 2) && bet >= 0)); 
 
-			if (bet != 0) { //did they make a insurance bet
-				players[i].insurance_bet = bet; //we have the insurance bet set
-				players[i].info.money -= bet; //we take it out of their money pile
+			if (bet != 0) { 
+				players[i].insurance_bet = bet;
+				players[i].info.money -= bet; 
 			}
 		}
 	}
 
-	if (score(players[0].hand) == 21) { //the dealer has 21
+	if (score(players[0].hand) == 21) { 
 		for (int i = 1; i < size; i++) {
-			if (players[i].insurance_bet != 0) { //if they took out insurance
-				players[i].info.money += (players[i].insurance_bet * 2); //pays out 2 to 1
-				players[i].insurance_bet = 0; //clears out the insurance bet
+			if (players[i].insurance_bet != 0) { 
+				players[i].info.money += (players[i].insurance_bet * 2); 
+				players[i].insurance_bet = 0; 
 			}
 		}
 	}
 	else {
 		for (int i = 1; i < size; i++) {
-			if (players[i].insurance_bet != 0) { //if they took out insurance
-				players[i].insurance_bet = 0; //clears out the insurance bet
+			if (players[i].insurance_bet != 0) { 
+				players[i].insurance_bet = 0; 
 			}
 		}
 	}
 }
 
-/**
-   Asks the user what they would like to bet and returns it
-*/
 void bet(player& user) {
 	int bet;
 	do {
-		cout << user.info.username << endl; //so we know what player is betting
-		cout << "Koliko zelite uloziti? (Mora biti vise od " << MIN_BET << " ili manje ili jednako " << user.info.money << ")" << endl; //we tell them what they can bet
-		cin >> bet; //takes in their bet
-	} while (!(bet >= MIN_BET && bet <= user.info.money)); //repeat until they get it right
-	user.info.money -= bet; //subtract the bet from their money stock pile
-	user.bet = bet; //set their bet
+		cout << user.info.username << endl; 
+		cout << "Koliko zelite uloziti? (Mora biti vise od " << MIN_BET << " ili manje ili jednako " << user.info.money << ")" << endl; 
+		cin >> bet; 
+	} while (!(bet >= MIN_BET && bet <= user.info.money));
+	user.info.money -= bet; 
+	user.bet = bet; 
 }
-/**
-	If the user chooses to split their cards
-	The split hand is completely played here
-*/
 void split(player& dealer, player& user) {
 	player split;
-	vector<player> players; //creates a new player for the split
+	vector<player> players; 
 	players.push_back(dealer);
 
-	split.bet = user.bet; // takes the extra bet
-	user.info.money -= user.bet; //takes out the bet from the user money pile
-	split.hand.push_back(user.hand[0]); //takes the first card from the user and gives it to the split player
-	split.hand.push_back(deal()); //gives the split person a new card
-	user.hand[0] = deal(); //gives the user a new card
+	split.bet = user.bet; 
+	user.info.money -= user.bet;
+	split.hand.push_back(user.hand[0]); 
+	split.hand.push_back(deal()); 
+	user.hand[0] = deal();
 	split.info.username = user.info.username;
-	players.push_back(split); //pushes the split player onto the vect
+	players.push_back(split); 
 
-	printCards(players[1].hand); //prints out the new cards
+	printCards(players[1].hand); 
 
-	char input; //what the input is
+	char input; 
 	do {
 		for (int i = 1; i < players.size(); i++) {
-			if (score(players[i].hand) > 21) { //if they bust
-				input = 'S'; //they are done
+			if (score(players[i].hand) > 21) { 
+				input = 'S'; 
 			}
 			else {
-				cout << "Hit(H) ili Stand(S):"; //otherwise we ask them if they want to take a hit
-				cin >> input; //take in their input
+				cout << "Hit(H) ili Stand(S):"; 
+				cin >> input; 
 			}
-			/**
-				If they take a hit the below code gives them a new card, prints out their new cards and their new score
-			*/
 			if (input == 'H' || input == 'h') {
 				players[i].hand.push_back(hitMe());
 				printCards(players[i].hand);
 				cout << players[i].info.username << "Zbroj karata je sada " << score(players[i].hand) << endl;
 			}
 		}
-	} while (!(input == 'S' || input == 's')); //we repeat this until they stop taking hits or bust
+	} while (!(input == 'S' || input == 's')); 
 
-	dealer_play(players[0]); //dealer plays now since we need to take care of this now rather than later
+	dealer_play(players[0]); 
 
-	/**
-		prints the split players cards and score again
-	*/
 	for (int i = 1; i < players.size(); i++) {
 		cout << players[i].info.username << " zbroj karata: " << score(players[i].hand) << " karte:" << endl;
 		printCards(players[i].hand);
 	}
 
-	/**
-		payouts the split player
-	*/
 	for (int i = 1; i < players.size(); i++) {
 		if (score(players[i].hand) > 21) {
-			cout << "Presli ste 21!"; //tells them they busted
+			cout << "Presli ste 21!"; 
 		}
-		payout(players[0], players[i]); //plays out the player
+		payout(players[0], players[i]); 
 	}
 }
-/**
-	Typical pay out rules. If the player wins he gets 2 to 1 odds.
-*/
+
 void payout(player dealer, player& user) {
-	if (winner(dealer, user) == 1) { //if the player won
-		if (score(user.hand) == 21 && hasAce(user.hand) && user.hand.size() == 2) { //if the player has blackjack it's a 3:2 payout
-			user.info.money += ((user.bet * 3) / 2); //I think this is 3:2 odds
-			user.bet = 0; //clears out the bet
+	if (winner(dealer, user) == 1) { 
+		if (score(user.hand) == 21 && hasAce(user.hand) && user.hand.size() == 2) { 
+			user.info.money += ((user.bet * 3) / 2); 
+			user.bet = 0; 
 			cout << user.info.username << " Pobjeda!" << endl;
 		}
 		else {
-			user.info.money += (user.bet * 2); //adds the bet to the players stash of cash
-			user.bet = 0; //clears out the bet
+			user.info.money += (user.bet * 2); 
+			user.bet = 0; 
 			cout << user.info.username << " Pobjeda!" << endl;
 		}
 	}
-	else if (winner(dealer, user) == 0) { //they tied
-		user.info.money += user.bet; //players money goes back to his pile
-		user.bet = 0; //clears out the bet
+	else if (winner(dealer, user) == 0) { 
+		user.info.money += user.bet; 
+		user.bet = 0;
 		cout << user.info.username << " Izjednaceno!" << endl;
 	}
-	else { //the dealer won.
-		user.bet = 0; //player didn't win so all we need to do is clear out. 
+	else { 
+		user.bet = 0;  
 		cout << user.info.username << " Izgubili ste!" << endl;
 	}
 }
-/**
-	Figures out if the dealer or the user won
-	returns 1 if the player won
-	returns -1 if the dealer won
-	returns 0 if they tie
-*/
 int winner(player dealer, player& user) {
-	if (score(dealer.hand) == score(user.hand)) { //they had a stand off
+	if (score(dealer.hand) == score(user.hand)) { 
 		return 0;
 	}
-	else if (((score(dealer.hand) < score(user.hand)) && (score(user.hand) <= 21)) || (score(dealer.hand) > 21 && score(user.hand) <= 21)) { //user won
+	else if (((score(dealer.hand) < score(user.hand)) && (score(user.hand) <= 21)) || (score(dealer.hand) > 21 && score(user.hand) <= 21)) { 
 		return 1;
 	}
-	else { //dealer typically wins
+	else { 
 		return -1;
 	}
 }
-/**
-	Double down
-	If the user chooses to double down we take in the new amount betted, deal one more card, and figure out if the user won
-	takes in the user and dealer players and returns nothing
-*/
 void doubleDown(player dealer, player& user) {
-	int bet; //so we can store the new bet
+	int bet; 
 	do {
-		cout << "Koliko zelite uloziti? (MOra biti vise od " << MIN_BET << " ili manje ili jednako od " << user.info.money << ")" << endl; //asks how much they want to bet
-		cin >> bet; //takes it in
-	} while (!(bet > MIN_BET && bet <= user.bet && bet <= user.info.money)); //we repeat this until they get it right
+		cout << "Koliko zelite uloziti? (MOra biti vise od " << MIN_BET << " ili manje ili jednako od " << user.info.money << ")" << endl; 
+		cin >> bet; 
+	} while (!(bet > MIN_BET && bet <= user.bet && bet <= user.info.money)); 
 
-	user.bet += bet; //add the new bet to the original
-	user.info.money -= bet; //takes out their double down bet from the money
-	user.hand.push_back(deal()); //gives the user one more card
-	payout(dealer, user); //pays out the player based on if he/she won		
+	user.bet += bet; 
+	user.info.money -= bet; 
+	user.hand.push_back(deal()); 
+	payout(dealer, user); 	
 }
-/**
-Returns the Character version of the suit
-Fairly self-explanatory...takes in a number between 0-4 and returns the suit based off that number
-*/
 char printSuit(card new_card) {
 	switch (new_card.suit) {
 	case 0:
@@ -627,79 +535,60 @@ char printSuit(card new_card) {
 	}
 }
 
-/**
-Prints the cards to the screen
-*/
+
 void printCards(vector<card> hand) {
-	const string CARD_VALUES[14] = { "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "X" }; //makes it easier to print
+	const string CARD_VALUES[14] = { "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "X" }; 
 
 	for (int i = 0; i < hand.size(); i++) {
-		/**cout << "----------" <<  endl
-			<< "|" << ((hand[i].up)?(hand[i].value):('X')) << ((hand[i].up)?((printSuit(hand[i]))):('X')) << setw(6) << "|" << endl
-				<< "|" << setw(8) << "|" << endl
-				<< "|" << setw(8) << "|" << endl
-				<< "|" << setw(8) << "|" << endl
-				<< "|" << setw(6) << ((hand[i].up)?(hand[i].value):('X')) <<  ((hand[i].up)?(printSuit(hand[i])):('X')) << "|" << endl
-				<< "----------" << endl;*/
-		if (hand[i].up) { //if the hand is face up we print this
+	
+		if (hand[i].up) { 
 			cout << CARD_VALUES[(hand[i].value - 1)] << printSuit(hand[i]) << " ";
 		}
-		else { //if it's face down we print XX
+		else { 
 			cout << CARD_VALUES[13] << CARD_VALUES[13] << " ";
 		}
 	}
 	cout << endl;
 }
-/**
-	Lets us know if the hand has an ace
-*/
+
 bool hasAce(vector<card> hand) {
-	bool has_ace = false; //For now we say there is no ace in the hand
+	bool has_ace = false; 
 	for (int i = 0; i < hand.size(); i++) {
-		if (hand[i].value == 1) { //we have an ace
-			has_ace = true; //so we set this to true
+		if (hand[i].value == 1) { 
+			has_ace = true; 
 		}
 	}
 
 	return has_ace;
 }
-/**
-	Gets the score for the user
-	We treat Aces initially as 1 and then later check to see if the hand contains an Ace
-*/
 int score(vector<card> hand) {
-	int total = 0; //setting up the total value	
+	int total = 0; 	
 	for (int i = 0; i < hand.size(); i++) {
-		if (hand[i].value >= 10) { //if it's 10, J, Q, or K
-			total += 10; //adds 10 to the toal
+		if (hand[i].value >= 10) { 
+			total += 10; 
 		}
 		else {
-			total += hand[i].value; //adds the value to the total 
+			total += hand[i].value; 
 		}
 	}
 
-	if (hasAce(hand) && total <= 11) { //if the hand has an ace and we won't bust
-		total += 10; //add 10
+	if (hasAce(hand) && total <= 11) { 
+		total += 10; 
 	}
 
-	return total; //return the total
+	return total; 
 }
-//gets a new card for the player
-card hitMe() {
-	return deal(); //add another card to the players hand
-}
-/**
-	takes in nothing and returns a card
-	makes a new card and assigns it a random value between 1-13
-	assigns a suit to the card as well
-	returns the card
-*/
-card deal() {
-	card new_card; //card we will be returning
 
-	new_card.value = 1 + rand() % 13; //makes sure the random number is between 1 and 13 for the value
+card hitMe() {
+	return deal(); 
+}
+
+card deal() {
+	card new_card; 
+
+	new_card.value = 1 + rand() % 13; 
 	int suit = rand() % 4;
-	switch (suit) { //makes sure the random number is between 1 and 4 for the suit
+	switch (suit) { 
 	case 0:
 		new_card.suit = S;
 		break;
@@ -714,7 +603,7 @@ card deal() {
 		break;
 	}
 
-	new_card.up = true; //we'll change it later if it's the dealers face down card
+	new_card.up = true; 
 
-	return new_card; //returning the card
+	return new_card; 
 }
